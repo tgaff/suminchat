@@ -1,0 +1,142 @@
+<html>
+<head>
+  <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  <link rel="stylesheet" type="text/css" href="/css/css.css">
+</head>
+<body>
+
+<!-- CHAT MARKUP -->
+<div class="example-chat l-demo-container">
+  <header>chat with translation</header>
+
+  <div class='example-chat-toolbar'>
+    <label for="nameInput">Username:</label>
+    <input type='text' id='nameInput' placeholder='enter a username...'>
+    <!--<input type='button' id='logOut' value='log out'>-->
+  </div>
+
+  <ul id='example-messages' class="example-chat-messages"></ul>
+
+  <footer>
+    <input type='text' id='messageInput'  placeholder='Type a message...'>
+  </footer>
+</div>
+<!-- auth -->
+<script>
+var nameField = $('#nameInput');
+var logOutButton = $('#logOut');
+var userID = '';
+var rootRef = new Firebase("https://suminchat.firebaseio.com");
+var userName = '';
+
+function authDataCallback(authData) {
+    if (!authData) {
+        rootRef.authWithOAuthPopup("google", function (error) {
+            console.log("Login Failed!", error);
+        });
+    }
+    else {
+        console.log("Authenticated successfully with payload:", authData);
+        userName = getName(authData);
+        updateUserName(userName);
+        setUserID(authData);
+        saveUser(authData);
+    }
+}
+rootRef.onAuth(authDataCallback);
+
+logOutButton.click(function() {
+    rootRef.unauth();
+    });
+
+function updateUserName(name) {
+  nameField.val(name);
+};
+
+
+/* user management */
+// we would probably save a profile when we register new users on our site
+
+function saveUser(authData) {
+  if (authData) {
+    // save the user's profile into Firebase so we can list users,
+    rootRef.child("users").child(authData.uid).set({
+      provider: authData.provider,
+      name: getName(authData)
+    });
+  }
+};
+
+// find a suitable name based on the meta info given by each provider
+function getName(authData) {
+  switch(authData.provider) {
+     case 'google':
+       return authData.google.displayName;
+     case 'password':
+       return authData.password.email.replace(/@.*/, '');
+     case 'twitter':
+       return authData.twitter.displayName;
+     case 'facebook':
+       return authData.facebook.displayName;
+  }
+};
+function setUserID(authData) {
+  userID = authData.uid;
+};
+
+
+</script>
+
+
+<!-- CHAT JAVACRIPT -->
+<script>
+  // CREATE A REFERENCE TO FIREBASE
+  var messagesRef = new Firebase('https://suminchat.firebaseio.com/');
+
+  // REGISTER DOM ELEMENTS
+  var messageField = $('#messageInput');
+  var nameField = $('#nameInput');
+  var messageList = $('#example-messages');
+
+  // LISTEN FOR KEYPRESS EVENT
+  messageField.keypress(function (e) {
+    if (e.keyCode == 13) {
+      //FIELD VALUES
+      var username = nameField.val();
+      var message = messageField.val();
+
+      //SAVE DATA TO FIREBASE AND EMPTY FIELD
+      messagesRef.push({name:username, text:message, userID:userID});
+      messageField.val('');
+    }
+  });
+
+  // Add a callback that is triggered for each chat message.
+  messagesRef.limitToLast(20).on('child_added', function (snapshot) {
+    //GET DATA
+    var data = snapshot.val();
+    var username = data.name || "anonymous";
+    var message = data.text;
+    var mid = data.userID || 'none';
+
+    //CREATE ELEMENTS MESSAGE & SANITIZE TEXT
+    if (mid == userID) {
+      var messageElement = $("<li class='me'>");
+    }
+    else {
+      var messageElement = $("<li>");
+    };
+    var nameElement = $("<strong class='example-chat-username'></strong>")
+    nameElement.text(username);
+    messageElement.text(message).prepend(nameElement);
+
+    //ADD MESSAGE
+    messageList.append(messageElement)
+
+    //SCROLL TO BOTTOM OF MESSAGE LIST
+    messageList[0].scrollTop = messageList[0].scrollHeight;
+  });
+</script>
+</body>
+</html>
