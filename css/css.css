@@ -101,6 +101,9 @@
     .example-chat footer input {
       border: 1px solid #ced3db;
       height: 40px; }
+li.me {
+  text-align: right;
+}
 
 #colorholder {
   width: 480px;

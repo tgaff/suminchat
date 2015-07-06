@@ -11,7 +11,7 @@
   <header>chat with translation</header>
 
   <div class='example-chat-toolbar'>
-    <label for="nameInput">Username:</label>
+    <label for="nameInput">name:</label>
     <input type='text' id='nameInput' placeholder='enter a username...'>
     <!--<input type='button' id='logOut' value='log out'>-->
   </div>
@@ -92,7 +92,9 @@ function setUserID(authData) {
 <!-- CHAT JAVACRIPT -->
 <script>
   // CREATE A REFERENCE TO FIREBASE
-  var messagesRef = new Firebase('https://suminchat.firebaseio.com/');
+
+  var chatRoom = 'demo1';
+  var messagesRef = new Firebase('https://suminchat.firebaseio.com/').child(chatRoom);
 
   // REGISTER DOM ELEMENTS
   var messageField = $('#messageInput');
