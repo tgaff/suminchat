@@ -27,8 +27,8 @@ translator.getTranslatorKey = function() {
   });
 
 }
-translator.translate = function(text, callback) {
-  var from = "en", to = "es";
+translator.translate = function(text, callbackName) {
+  var from = "en", to = "ko";
 
   var s = document.createElement("script");
   s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
@@ -36,7 +36,7 @@ translator.translate = function(text, callback) {
       "&from=" + encodeURIComponent(from) +
       "&to=" + encodeURIComponent(to) +
       "&text=" + encodeURIComponent(text) +
-      "&oncomplete=" + callback.name;
+      "&oncomplete=" + callbackName;
   document.body.appendChild(s);
 }
 translator.setupTranslatorKeyExpiration = function(msg) {
