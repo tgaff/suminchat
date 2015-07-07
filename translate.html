@@ -11,28 +11,28 @@
   <header>chat with translation</header>
 
   <div class='example-chat-toolbar'>
-    <label for="nameInput">name:</label>
-    <input type='text' id='nameInput' placeholder='enter a username...'>
+    <label for="textInput">text:</label>
+    <input type='text' id='textInput' placeholder='text to translate...'>
     <input type='button' id='translate' value='translate'>
   </div>
 
   <ul id='example-messages' class="example-chat-messages"></ul>
 
-  <footer>
-    <input type='text' id='messageInput'  placeholder='Type a message...'>
-  </footer>
 </div>
 <script type="text/javascript">
-
   var translateButton = $('#translate');
   var __last_msg = {};
+  var textInput = $('#textInput');
   onload = function ()
   {
     translator.getTranslatorKey();
-   }
+  }
+
 
   translateButton.click(function() {
-    translator.translate('raining cats and dogs')
+    if (textInput.val()) {
+      translator.translate(textInput.val());
+    }
   });
 
 
@@ -41,7 +41,7 @@
   translator.translatorKeyExpired = true;
 
   // milliseconds before the key should expire that we mark it expired
-  translator.keySafetyMarginMS = 590*1000; // convert to ms
+  translator.keySafetyMarginMS = 15*1000; // seconds * 1000 = milliseconds
 
   //get access token
   translator.getTranslatorKey = function() {
@@ -82,7 +82,9 @@
       this.translatorKeyExpired = false;
       console.log(1000*remainingTime - this.keySafetyMarginMS);
     }
-    setTimeout(function() { self.expireTranslatorKey(); }, (1000*remainingTime - this.keySafetyMarginMS));
+    setTimeout(function() { self.expireTranslatorKey(); },
+     (1000*remainingTime - this.keySafetyMarginMS)
+    );
   }
   translator.expireTranslatorKey = function() {
     console.log('expiring key');
@@ -94,8 +96,23 @@
   }
   function mycallback(response)
   {
-      alert(response);
+      //alert(response);
+    insertTranslation(response);
   }
+
+
+
+var messageList = $('#example-messages');
+//insert to page
+function insertTranslation(message) {
+  var messageElement = $("<li>");
+ // var nameElement = $("<strong class='example-chat-username'></strong>")
+ // nameElement.text(username);
+  messageElement.text(message);
+
+  //ADD MESSAGE
+  messageList.append(messageElement);
+}
 </script>
 
 </body>
