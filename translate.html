@@ -1,0 +1,70 @@
+<html>
+<head>
+  <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  <link rel="stylesheet" type="text/css" href="/css/css.css">
+</head>
+<body>
+
+<!-- CHAT MARKUP -->
+<div class="example-chat l-demo-container">
+  <header>chat with translation</header>
+
+  <div class='example-chat-toolbar'>
+    <label for="nameInput">name:</label>
+    <input type='text' id='nameInput' placeholder='enter a username...'>
+    <input type='button' id='translate' value='translate'>
+  </div>
+
+  <ul id='example-messages' class="example-chat-messages"></ul>
+
+  <footer>
+    <input type='text' id='messageInput'  placeholder='Type a message...'>
+  </footer>
+</div>
+<script type="text/javascript">
+  var accessToken = '';
+  var translateButton = $('#translate');
+
+  onload = function ()
+  {
+      //get access token
+    $.ajax({
+      type: 'POST',
+      url: '/translatorkey',
+      dataType: 'json',
+      success: function(msg) {
+        if(msg) {
+          accessToken = msg['access_token'];
+          console.log(msg);
+        } else {
+          alert("error" + msg);
+        }
+      }
+    });
+  }
+
+  function translate(text) {
+    var from = "en", to = "es";
+
+    var s = document.createElement("script");
+    s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
+        "?appId=Bearer " + encodeURIComponent(accessToken) +
+        "&from=" + encodeURIComponent(from) +
+        "&to=" + encodeURIComponent(to) +
+        "&text=" + encodeURIComponent(text) +
+        "&oncomplete=mycallback";
+    document.body.appendChild(s);
+  }
+  function mycallback(response)
+  {
+      alert(response);
+  }
+  translateButton.click(function() {
+    translate('raining cats and dogs')
+  });
+</script>
+
+</body>
+
+</html>
