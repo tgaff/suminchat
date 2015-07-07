@@ -37,7 +37,7 @@
 
 
   var translator = {};
-  translator.accessToken = '';
+  translator.accessToken = null;
   translator.translatorKeyExpired = true;
 
   translator.keySafetyMarginMS = 15*1000; // convert to milliseconds
@@ -86,6 +86,9 @@
     console.log('expiring key');
     this.translatorKey = null;
     this.translatorKeyExpired = true;
+    // for now we'll automatically get a new key but this is likely something we should do
+    // at the translate() step, so that it's only done for active users.
+    this.getTranslatorKey();
   }
   function mycallback(response)
   {
