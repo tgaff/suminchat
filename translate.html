@@ -23,27 +23,35 @@
   </footer>
 </div>
 <script type="text/javascript">
+  //var translator = {};
+
   var accessToken = '';
   var translateButton = $('#translate');
-
+  var translatorKeyExpired = true;
+  var __last_msg = {};
   onload = function ()
   {
-      //get access token
+    getTranslatorKey();
+   }
+  function getTranslatorKey() {
+     //get access token
     $.ajax({
       type: 'POST',
       url: '/translatorkey',
       dataType: 'json',
       success: function(msg) {
         if(msg) {
+          __list_msg = msg;
           accessToken = msg['access_token'];
+          setupTranslatorKeyExpiration(msg);
           console.log(msg);
         } else {
           alert("error" + msg);
         }
       }
     });
-  }
 
+  }
   function translate(text) {
     var from = "en", to = "es";
 
@@ -55,6 +63,20 @@
         "&text=" + encodeURIComponent(text) +
         "&oncomplete=mycallback";
     document.body.appendChild(s);
+  }
+  var keySafetyMarginMS = 30*1000;
+  function setupTranslatorKeyExpiration(msg) {
+    var remainingTime = 1;
+    if (msg['expires_in']) {
+      remainingTime = msg['expires_in'];
+      translatorKeyExpired = false;
+      console.log(1000*remainingTime - keySafetyMarginMS);
+    }
+    setTimeout(expireTranslatorKey, (1000*remainingTime - keySafetyMarginMS));
+  }
+  function expireTranslatorKey() {
+    console.log('expiring key');
+    translatorKeyExpired = true;
   }
   function mycallback(response)
   {
