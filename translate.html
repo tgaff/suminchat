@@ -23,18 +23,27 @@
   </footer>
 </div>
 <script type="text/javascript">
-  //var translator = {};
 
-  var accessToken = '';
   var translateButton = $('#translate');
-  var translatorKeyExpired = true;
   var __last_msg = {};
   onload = function ()
   {
-    getTranslatorKey();
+    translator.getTranslatorKey();
    }
-  function getTranslatorKey() {
-     //get access token
+
+  translateButton.click(function() {
+    translator.translate('raining cats and dogs')
+  });
+
+
+  var translator = {};
+  translator.accessToken = '';
+  translator.translatorKeyExpired = true;
+
+  translator.keySafetyMarginMS = 15*1000; // convert to milliseconds
+
+  //get access token
+  translator.getTranslatorKey = function() {
     $.ajax({
       type: 'POST',
       url: '/translatorkey',
@@ -42,8 +51,8 @@
       success: function(msg) {
         if(msg) {
           __list_msg = msg;
-          accessToken = msg['access_token'];
-          setupTranslatorKeyExpiration(msg);
+          translator.accessToken = msg['access_token'];
+          translator.setupTranslatorKeyExpiration(msg);
           console.log(msg);
         } else {
           alert("error" + msg);
@@ -52,39 +61,36 @@
     });
 
   }
-  function translate(text) {
+  translator.translate = function(text) {
     var from = "en", to = "es";
 
     var s = document.createElement("script");
     s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
-        "?appId=Bearer " + encodeURIComponent(accessToken) +
+        "?appId=Bearer " + encodeURIComponent(translator.accessToken) +
         "&from=" + encodeURIComponent(from) +
         "&to=" + encodeURIComponent(to) +
         "&text=" + encodeURIComponent(text) +
         "&oncomplete=mycallback";
     document.body.appendChild(s);
   }
-  var keySafetyMarginMS = 30*1000;
-  function setupTranslatorKeyExpiration(msg) {
+  translator.setupTranslatorKeyExpiration = function(msg) {
     var remainingTime = 1;
     if (msg['expires_in']) {
       remainingTime = msg['expires_in'];
-      translatorKeyExpired = false;
-      console.log(1000*remainingTime - keySafetyMarginMS);
+      this.translatorKeyExpired = false;
+      console.log(1000*remainingTime - this.keySafetyMarginMS);
     }
-    setTimeout(expireTranslatorKey, (1000*remainingTime - keySafetyMarginMS));
+    setTimeout(this.expireTranslatorKey, (1000*remainingTime - this.keySafetyMarginMS));
   }
-  function expireTranslatorKey() {
+  translator.expireTranslatorKey = function() {
     console.log('expiring key');
-    translatorKeyExpired = true;
+    this.translatorKey = null;
+    this.translatorKeyExpired = true;
   }
   function mycallback(response)
   {
       alert(response);
   }
-  translateButton.click(function() {
-    translate('raining cats and dogs')
-  });
 </script>
 
 </body>
