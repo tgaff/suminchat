@@ -40,7 +40,8 @@
   translator.accessToken = null;
   translator.translatorKeyExpired = true;
 
-  translator.keySafetyMarginMS = 15*1000; // convert to milliseconds
+  // milliseconds before the key should expire that we mark it expired
+  translator.keySafetyMarginMS = 590*1000; // convert to ms
 
   //get access token
   translator.getTranslatorKey = function() {
@@ -74,13 +75,14 @@
     document.body.appendChild(s);
   }
   translator.setupTranslatorKeyExpiration = function(msg) {
+    var self = this;
     var remainingTime = 1;
     if (msg['expires_in']) {
       remainingTime = msg['expires_in'];
       this.translatorKeyExpired = false;
       console.log(1000*remainingTime - this.keySafetyMarginMS);
     }
-    setTimeout(this.expireTranslatorKey, (1000*remainingTime - this.keySafetyMarginMS));
+    setTimeout(function() { self.expireTranslatorKey(); }, (1000*remainingTime - this.keySafetyMarginMS));
   }
   translator.expireTranslatorKey = function() {
     console.log('expiring key');
