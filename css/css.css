@@ -104,6 +104,27 @@
     .example-chat footer input {
       border: 1px solid #ced3db;
       height: 40px; }
+    /* travis */
+    .example-chat footer .lang-selector form input,
+    .example-chat footer .lang-selector form label {
+      width: auto;
+      display: inline;
+      padding: 2px;
+      border: 1px;
+      margin: 1px;
+      /* box-sizing: border-box; */
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      vertical-align: middle;
+
+      }
+      .example-chat footer .lang-selector form input {
+        height: 36px;
+        margin: 0px 8px 0px 1px;
+      }
+
+
+/* end travis */
 li.me {
   text-align: right;
 }
