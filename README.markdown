@@ -8,11 +8,9 @@ To try: localhost:8080/chat.html
 
 # Components
 
-## 
-
 ## Front-end
 Jquery, and it's pretty darn messy at that ;-/ 
-CSS was also borrowed from a Firebase sample project: https://github.com/firebase/examples under MIT license.
+CSS was borrowed from a Firebase sample project: https://github.com/firebase/examples under MIT license.
 
 ## Data 
 Firebase
