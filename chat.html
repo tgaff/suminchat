@@ -25,6 +25,7 @@
     <input type='text' id='messageInput'  placeholder='Type a message...'>
   </footer>
 </div>
+<div class='notes'></div>
 <!-- auth connector -->
 <script>
 var nameField = $('#nameInput');
@@ -85,17 +86,17 @@ function updateUserName(name) {
     var data = snapshot.val();
     var username = data.name || "anonymous";
     var message = data.text;
-    var uid = data.userID || 'none';
-    var mid = snapshot.key(); //
+    var uID = data.userID || 'none';
+    var mID = snapshot.key(); //
     //CREATE ELEMENTS MESSAGE & SANITIZE TEXT
-    if (uid == googleAuth.userID) {
+    if (uID == googleAuth.userID) {
       var messageElement = $("<li class='me'>");
     }
     else {
       var messageElement = $("<li>");
     };
-    messageElement.addClass("userID-" + uid);
-    messageElement.attr('id', "messageID" + mid);
+    messageElement.addClass("userID-" + uID);
+    messageElement.attr('id', "messageID" + mID);
     var nameElement = $("<strong class='example-chat-username'></strong>")
     nameElement.text(username);
     messageElement.text(message).prepend(nameElement);
@@ -111,10 +112,33 @@ function updateUserName(name) {
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
 
-//
-//  messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
-//    var data = snapshot.val;
-//  });
+  // this most likely is only going to occur on a translation update
+  // loading of new messages should be in child added
+  messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
+    //$('.notes').append('<p>received update</p>');
+    var data = snapshot.val();
+    var mID = snapshot.key();
+    //find the particular message
+
+    messageElement = $('#messageID'+mID);
+    // inserting translations
+    if (data.translations && messageElement) {
+      var translationHTML = generateTranslationElements(data.translations)
+      messageElement.children('.translation').remove();
+      translationHTML.hide();
+      messageElement.append(translationHTML);
+      messageElement.children('.translation').fadeIn(400);
+    };
+
+
+
+  });
+
+
+
+
+
+
 
   function generateTranslationElements(translations) {
     var elem = $("<p class='translation'>");
