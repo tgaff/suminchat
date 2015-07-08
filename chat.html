@@ -32,11 +32,27 @@ var nameField = $('#nameInput');
 var logOutButton = $('#logOut');
 
 var rootRef = new Firebase("https://suminchat.firebaseio.com");
-
-rootRef.onAuth(function(authData) {
+var authCounter = 1;
+var onAuthCallback = function(authData) {
+  alert('auth'+authCounter);
+  authCounter= authCounter + 1;
   googleAuth.authDataCallback(authData);
   updateUserName(googleAuth.userName);
-});
+  rootRef.offAuth(onAuthCallback);
+};
+
+// this seems to work but the below version is simpler
+/*
+setTimeout(function() {
+  var auth = rootRef.getAuth();
+  if (auth == null) {
+    rootRef.onAuth(onAuthCallback);
+  } else {
+    onAuthCallback(auth);
+  }
+}, 1000);
+*/
+setTimeout(function() { rootRef.onAuth(onAuthCallback); }, 400);
 
 logOutButton.click(function() {
   rootRef.unauth(); // not working so great
@@ -77,7 +93,6 @@ function updateUserName(name) {
       messageField.val('');
     }
   });
-
 
 
   // Add a callback that is triggered for each chat message.

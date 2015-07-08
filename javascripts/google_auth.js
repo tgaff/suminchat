@@ -5,7 +5,7 @@ var googleAuth = {};
 googleAuth.authDataCallback = function(authData) {
     self.authData = authData;
     if (!authData) {
-        rootRef.authWithOAuthPopup("google", function (error) {
+        rootRef.authWithOAuthRedirect("google", function (error) {
             console.log("Login Failed!", error);
         });
     }
