@@ -32,13 +32,14 @@ var nameField = $('#nameInput');
 var logOutButton = $('#logOut');
 
 var rootRef = new Firebase("https://suminchat.firebaseio.com");
-var authCounter = 1;
+
 var onAuthCallback = function(authData) {
-  alert('auth'+authCounter);
-  authCounter= authCounter + 1;
   googleAuth.authDataCallback(authData);
-  updateUserName(googleAuth.userName);
-  rootRef.offAuth(onAuthCallback);
+  if (authData) {
+    updateUserName(googleAuth.userName);
+    rootRef.offAuth(onAuthCallback);
+    setupMessageMonitor();
+  };
 };
 
 // this seems to work but the below version is simpler
@@ -94,7 +95,7 @@ function updateUserName(name) {
     }
   });
 
-
+function setupMessageMonitor() {
   // Add a callback that is triggered for each chat message.
   messagesRef.limitToLast(30).on('child_added', function (snapshot) {
     //GET DATA
@@ -126,8 +127,6 @@ function updateUserName(name) {
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
-
-
   // this most likely is only going to occur on a translation update
   // loading of new messages should be in child added
   messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
@@ -153,6 +152,7 @@ function updateUserName(name) {
   });
 
 
+};
 
 
 
