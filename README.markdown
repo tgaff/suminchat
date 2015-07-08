@@ -11,10 +11,14 @@ To try: localhost:8080/chat.html
 ## 
 
 ## Front-end
-jquery, and it's pretty messy at that ;-/
+Jquery, and it's pretty darn messy at that ;-/ 
+CSS was also borrowed from a Firebase sample project: https://github.com/firebase/examples under MIT license.
 
 ## Data 
 Firebase
+
+## Server
+node / connect
 
 ## Authentication
 Authentication is provided by Google's OAuth.
