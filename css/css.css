@@ -95,6 +95,9 @@
         margin: 0px; }
     .example-chat ul .example-chat-username {
       margin-right: 10px; }
+    .example-chat ul .translation {
+      margin: 0px;
+      font-weight: lighter; }
   .example-chat footer {
     display: block;
     padding: 10px; }
