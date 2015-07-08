@@ -70,12 +70,14 @@ function updateUserName(name) {
         name:username,
         text:message,
         userID:googleAuth.userID,
-        translation: null
+        translations: null
       });
       handleTranslation(newMessageRef, message);
       messageField.val('');
     }
   });
+
+
 
   // Add a callback that is triggered for each chat message.
   messagesRef.limitToLast(30).on('child_added', function (snapshot) {
@@ -99,27 +101,37 @@ function updateUserName(name) {
     messageElement.text(message).prepend(nameElement);
 
     // inserting translations
-    if (data.translation) {
-      keys = Object.keys(data.translation);
-      keys.forEach(function(key) {
-        var element = messageElement;//$('#messageID' + ref.key());
-        var translatedMessage = data.translation[key];
-        if (translatedMessage) {
-          element.append('<p><i>' + key + ': ' + translatedMessage + '</i></p>');
-        }
-      });
-      // end translations
-    }
+    if (data.translations) {
+      var translationHTML = generateTranslationElements(data.translations)
+      messageElement.append(translationHTML);
+    };
     //put the message on the page
-    messageList.append(messageElement)
-
+    messageList.append(messageElement);
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
 
-//  messagesRef.limitToLast(30).on('child_changed', function (snapshot) {
+//
+//  messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
+//    var data = snapshot.val;
+//  });
+
+  function generateTranslationElements(translations) {
+    var elem = $("<p class='translation'>");
+    keys = Object.keys(translations);
+    keys.forEach(function(key) {
+      var translatedMessage = translations[key];
+      if (translatedMessage) {
+        elem.append($('<i>' + key + ': ' + translatedMessage + '</i>'));
+      };
+    });
+    console.log(elem);
+    return(elem);
 
 
+    // end translations
+
+  };
 
 </script>
 <script>
@@ -139,12 +151,12 @@ function handleTranslation(ref, message) {
   translator.translate(message, funcName);
 
 }
-// update the firebase Reference and TODO the page with the translated message
-function updateWithTranslation(ref, translatedMessage) {
+// update the firebase Reference with the translated message
+function updateFBWithTranslation(ref, translatedMessage) {
   var to = 'ko';
   var keySet = {};
   keySet[to] = translatedMessage;
-  ref.update({translation: keySet});
+  ref.update({translations: keySet});
 }
 
 // create a unique name for functions
@@ -160,7 +172,7 @@ function generateNewFunction(functionName, ref) {
     var fireBaseRef = ref;
     var self = this;
     return (function() {
-      updateWithTranslation(ref, translatedMessage);
+      updateFBWithTranslation(ref, translatedMessage);
     }())
   };
 };
