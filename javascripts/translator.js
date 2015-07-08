@@ -52,7 +52,7 @@ translator.setupTranslatorKeyExpiration = function(msg) {
   );
 }
 translator.expireTranslatorKey = function() {
-  console.log('expiring key');
+  console.log('expiring translator key');
   this.translatorKey = null;
   this.translatorKeyExpired = true;
   // for now we'll automatically get a new key but this is likely something we should do
