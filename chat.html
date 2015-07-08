@@ -112,6 +112,7 @@ function updateUserName(name) {
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
 
+
   // this most likely is only going to occur on a translation update
   // loading of new messages should be in child added
   messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
@@ -128,13 +129,13 @@ function updateUserName(name) {
       translationHTML.hide();
       messageElement.append(translationHTML);
       messageElement.children('.translation').fadeIn(400);
+
+    //SCROLL TO BOTTOM OF MESSAGE LIST
+    messageList[0].scrollTop = messageList[0].scrollHeight;
+
     };
 
-
-
   });
-
-
 
 
 
