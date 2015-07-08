@@ -4,6 +4,7 @@ var https = require('https');
 var app = connect();
 var querystring = require('querystring');
 
+console.log("ITS ALIVE!!!!!!! !!!!!!!");
 
 function getTranslatorKey(clientReq, clientRes, next) {
   // there are multiple res and req variables here as we both receive
@@ -58,5 +59,6 @@ function parseTokenResponseData(chunk) {
   console.log(data);
   return data;
 }
+var port = (process.env.PORT || 8080);
 app.use('/translatorkey', getTranslatorKey);
-app.use(serveStatic(__dirname)).listen(8080);
+app.use(serveStatic(__dirname)).listen(port);
