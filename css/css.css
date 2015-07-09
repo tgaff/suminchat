@@ -126,6 +126,9 @@
 .translation {
   display: none;
 }
+p.translation {
+  margin: 1;
+}
 /* end travis */
 li.me {
   text-align: right;
