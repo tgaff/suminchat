@@ -27,7 +27,7 @@
       <div id='from-lang'>
       </div>
       <div id='to-lang'><form>
-        <label>Show translations for:</label>
+        <label>I want to see translations in:</label>
         <br>
         <label>en</label>
         <input type="checkbox" name="to" value="en">
@@ -35,8 +35,8 @@
         <input type="checkbox" name="to" value="es">
         <label>de</label>
         <input type="checkbox" name="to" value="de">
-        <label>kr</label>
-        <input type="checkbox" name="to" value="kr">
+        <label>ko</label>
+        <input type="checkbox" name="to" value="ko">
         <label>zh-CHS</label>
         <input type="checkbox" name="to" value="zh-CHS">
       </form>
@@ -83,8 +83,29 @@ function updateUserName(name) {
 };
 
 </script>
+<!-- checkbox handlers -->
+<script>
+var supportedLanguageCodes = [ 'en',   'es',   'de',   'ko',   'zh-CHS' ];
 
-
+// handle to checkbox - displaying translations based upon checked boxes
+$(document).ready(function() {
+  supportedLanguageCodes.forEach(function(langKey) {
+    var langClass = '.'+langKey;
+    var langCheckBox = $('input[value='+langKey+']');
+    langCheckBox.click(function() {
+      if (langCheckBox.is(':checked')) {
+        $(langClass).show(1, scrollToBottom);
+        scrollToBottom();
+      } else {
+        $(langClass).slideUp('slow');
+      }
+    })
+  });//forEach
+});
+function scrollToBottom() {
+  messageList[0].scrollTop = messageList[0].scrollHeight;
+};
+</script>
 <!-- CHAT JAVACRIPT -->
 <script>
   var chatRoom = 'demo1';
@@ -169,24 +190,19 @@ function setupMessageMonitor() {
     };
 
   });
-
-
 };
 
 
-
   function generateTranslationElements(translations) {
-    var elem = $("<p class='translation'>");
+    var elem = $("<p class='translations'>");
     keys = Object.keys(translations);
     keys.forEach(function(key) {
       var translatedMessage = translations[key];
       if (translatedMessage) {
-        elem.append($('<i>' + key + ': ' + translatedMessage + '</i>'));
+        elem.append($('<i class="translation ' + key +'">' + key + ': ' + translatedMessage + '</i>'));
       };
     });
     return(elem);
-
-
     // end translations
 
   };
