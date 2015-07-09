@@ -27,9 +27,13 @@ translator.getTranslatorKey = function() {
   });
 
 }
-translator.translate = function(text, callbackName) {
-  var from = "en", to = "ko";
-
+// text, callbackName, from, to
+// text: text to translate,
+// callbackName: name of a callback function microsoft will call,
+// from: the language to translate from
+// to: the language to translate to
+translator.translate = function(text, callbackName, from, to) {
+  if (from==to) { return(false); } //no point in translating this
   var s = document.createElement("script");
   s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
       "?appId=Bearer " + encodeURIComponent(translator.accessToken) +
