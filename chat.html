@@ -108,7 +108,7 @@ function scrollToBottom() {
 </script>
 <!-- CHAT JAVACRIPT -->
 <script>
-  var chatRoom = 'demo1';
+  var chatRoom = 'demo2';
   var messagesRef = new Firebase('https://suminchat.firebaseio.com/').child(chatRoom);
 
   // REGISTER DOM ELEMENTS
@@ -167,6 +167,8 @@ function setupMessageMonitor() {
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
+
+
   // this most likely is only going to occur on a translation update
   // loading of new messages should be in child added
   messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
@@ -179,16 +181,14 @@ function setupMessageMonitor() {
     // inserting translations
     if (data.translations && messageElement) {
       var translationHTML = generateTranslationElements(data.translations)
-      messageElement.children('.translation').remove();
+      messageElement.children('.translations').remove();
       translationHTML.hide();
       messageElement.append(translationHTML);
-      messageElement.children('.translation').fadeIn(400);
+      messageElement.children('.translations').fadeIn(400);
 
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
-
     };
-
   });
 };
 
@@ -204,49 +204,59 @@ function setupMessageMonitor() {
     });
     return(elem);
     // end translations
-
   };
 
 </script>
 <script>
 //translator integration
 
-  var __last_msg = {};
-  var textInput = $('#textInput');
-  onload = function ()
-  {
-    translator.getTranslatorKey();
-  }
+var __last_msg = {};
+var textInput = $('#textInput');
+onload = function ()
+{
+  translator.getTranslatorKey();
+}
 
 // request a new callback function and pass its name and the text to the translator
 function handleTranslation(ref, message) {
-  var funcName = generateNewFunctionName();
-  generateNewFunction(funcName, ref);
-  translator.translate(message, funcName);
-
+  // TODO: currently we try to translate to all supported languages, this is wasteful
+  // but would require a fair bit of re-work to fix.
+  supportedLanguageCodes.forEach(function(langCode) {
+    //build a new function to be called as the callBack by ms translator
+    var funcName = generateNewFunctionName();
+    generateNewFunction(funcName, ref, {to: langCode});
+    translator.translate(message,
+      funcName,
+      'en',
+      langCode);
+  });
 }
 // update the firebase Reference with the translated message
-function updateFBWithTranslation(ref, translatedMessage) {
-  var to = 'ko';
+function updateFBWithTranslation(ref, translatedMessage, lang) {
   var keySet = {};
-  keySet[to] = translatedMessage;
-  ref.update({translations: keySet});
+  keySet[lang] = translatedMessage;
+  // ref.update({translations: keySet});
+  ref.child('translations').update(keySet);
 }
 
 // create a unique name for functions
 function generateNewFunctionName() {
-  return 'func' + Date.now();
+  var someRandomNumbers = Math.floor(Math.random() * 999) + 1
+  return 'func' + Date.now() + 'R' + someRandomNumbers ;
 }
 
 // do scary things
-function generateNewFunction(functionName, ref) {
+function generateNewFunction(functionName, ref, opts) {
+  console.log(functionName);
   window[functionName] = function(translatedMessage) {
     //encapsulation
-    var functionName = functionName;
+    //var functionName = functionName;
     var fireBaseRef = ref;
     var self = this;
     return (function() {
-      updateFBWithTranslation(ref, translatedMessage);
+      console.log('functionName:'+functionName);
+      console.log(ref, translatedMessage, opts);
+      updateFBWithTranslation(ref, translatedMessage, opts['to']);
     }())
   };
 };
