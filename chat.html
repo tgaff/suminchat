@@ -86,12 +86,19 @@ function updateUserName(name) {
 <!-- checkbox handlers -->
 <script>
 var supportedLanguageCodes = [ 'en',   'es',   'de',   'ko',   'zh-CHS' ];
-
+function checkBoxFor(lang) { return($('input[value='+lang+']')); };
+function isARequestedDisplayLanguage(lang) {
+  if (checkBoxFor(lang).is(':checked')) {
+    return(true);
+  } else {
+    return(false);
+  }
+};
 // handle to checkbox - displaying translations based upon checked boxes
 $(document).ready(function() {
   supportedLanguageCodes.forEach(function(langKey) {
     var langClass = '.'+langKey;
-    var langCheckBox = $('input[value='+langKey+']');
+    var langCheckBox = checkBoxFor(langKey);
     langCheckBox.click(function() {
       if (langCheckBox.is(':checked')) {
         $(langClass).show(1, scrollToBottom);
@@ -158,17 +165,15 @@ function setupMessageMonitor() {
     messageElement.text(message).prepend(nameElement);
 
     // inserting translations
-    if (data.translations) {
-      var translationHTML = generateTranslationElements(data.translations)
-      messageElement.append(translationHTML);
-    };
+    var translationHTML = generateTranslationElements(data.translations)
+    messageElement.append(translationHTML);
     //put the message on the page
     messageList.append(messageElement);
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
 
-
+  // ADD NEW MESSAGE TRANSLATIONS
   // this most likely is only going to occur on a translation update
   // loading of new messages should be in child added
   messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
@@ -181,11 +186,10 @@ function setupMessageMonitor() {
     // inserting translations
     if (data.translations && messageElement) {
       var translationHTML = generateTranslationElements(data.translations)
-      messageElement.children('.translations').remove();
-      translationHTML.hide();
-      messageElement.append(translationHTML);
+      //messageElement.children('.translations').remove();
+      //translationHTML.hide();
+      messageElement.children('.translations').replaceWith(translationHTML);
       messageElement.children('.translations').fadeIn(400);
-
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
     };
@@ -195,13 +199,19 @@ function setupMessageMonitor() {
 
   function generateTranslationElements(translations) {
     var elem = $("<p class='translations'>");
-    keys = Object.keys(translations);
-    keys.forEach(function(key) {
-      var translatedMessage = translations[key];
-      if (translatedMessage) {
-        elem.append($('<i class="translation ' + key +'">' + key + ': ' + translatedMessage + '</i>'));
-      };
-    });
+    if (translations) {
+      keys = Object.keys(translations);
+      keys.forEach(function(key) {
+        var translatedMessage = translations[key];
+        if (translatedMessage) {
+          var newElem = $('<p class="translation ' + key +'">' + key + ': ' + translatedMessage + '</p>');
+          elem.append(newElem);
+          if (isARequestedDisplayLanguage(key)) {
+            newElem.show();
+          };
+        };
+      });
+    };
     return(elem);
     // end translations
   };
