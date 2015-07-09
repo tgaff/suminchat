@@ -23,6 +23,25 @@
 
   <footer>
     <input type='text' id='messageInput'  placeholder='Type a message...'>
+    <div class='lang-selector'>
+      <div id='from-lang'>
+      </div>
+      <div id='to-lang'><form>
+        <label>I want to see translations in:</label>
+        <br>
+        <label>en</label>
+        <input type="checkbox" name="to" value="en">
+        <label>es</label>
+        <input type="checkbox" name="to" value="es">
+        <label>de</label>
+        <input type="checkbox" name="to" value="de">
+        <label>ko</label>
+        <input type="checkbox" name="to" value="ko">
+        <label>zh-CHS</label>
+        <input type="checkbox" name="to" value="zh-CHS">
+      </form>
+      </div>
+    </div>
   </footer>
 </div>
 <div class='notes'></div>
@@ -64,11 +83,39 @@ function updateUserName(name) {
 };
 
 </script>
-
-
+<!-- checkbox handlers -->
+<script>
+var supportedLanguageCodes = [ 'en',   'es',   'de',   'ko',   'zh-CHS' ];
+function checkBoxFor(lang) { return($('input[value='+lang+']')); };
+function isARequestedDisplayLanguage(lang) {
+  if (checkBoxFor(lang).is(':checked')) {
+    return(true);
+  } else {
+    return(false);
+  }
+};
+// handle to checkbox - displaying translations based upon checked boxes
+$(document).ready(function() {
+  supportedLanguageCodes.forEach(function(langKey) {
+    var langClass = '.'+langKey;
+    var langCheckBox = checkBoxFor(langKey);
+    langCheckBox.click(function() {
+      if (langCheckBox.is(':checked')) {
+        $(langClass).show(1, scrollToBottom);
+        scrollToBottom();
+      } else {
+        $(langClass).slideUp('slow');
+      }
+    })
+  });//forEach
+});
+function scrollToBottom() {
+  messageList[0].scrollTop = messageList[0].scrollHeight;
+};
+</script>
 <!-- CHAT JAVACRIPT -->
 <script>
-  var chatRoom = 'demo1';
+  var chatRoom = 'demo2';
   var messagesRef = new Firebase('https://suminchat.firebaseio.com/').child(chatRoom);
 
   // REGISTER DOM ELEMENTS
@@ -118,15 +165,15 @@ function setupMessageMonitor() {
     messageElement.text(message).prepend(nameElement);
 
     // inserting translations
-    if (data.translations) {
-      var translationHTML = generateTranslationElements(data.translations)
-      messageElement.append(translationHTML);
-    };
+    var translationHTML = generateTranslationElements(data.translations)
+    messageElement.append(translationHTML);
     //put the message on the page
     messageList.append(messageElement);
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
   });
+
+  // ADD NEW MESSAGE TRANSLATIONS
   // this most likely is only going to occur on a translation update
   // loading of new messages should be in child added
   messagesRef.limitToLast(10).on('child_changed', function(snapshot) {
@@ -139,79 +186,87 @@ function setupMessageMonitor() {
     // inserting translations
     if (data.translations && messageElement) {
       var translationHTML = generateTranslationElements(data.translations)
-      messageElement.children('.translation').remove();
-      translationHTML.hide();
-      messageElement.append(translationHTML);
-      messageElement.children('.translation').fadeIn(400);
-
+      //messageElement.children('.translations').remove();
+      //translationHTML.hide();
+      messageElement.children('.translations').replaceWith(translationHTML);
+      messageElement.children('.translations').fadeIn(400);
     //SCROLL TO BOTTOM OF MESSAGE LIST
     messageList[0].scrollTop = messageList[0].scrollHeight;
-
     };
-
   });
-
-
 };
 
 
-
   function generateTranslationElements(translations) {
-    var elem = $("<p class='translation'>");
-    keys = Object.keys(translations);
-    keys.forEach(function(key) {
-      var translatedMessage = translations[key];
-      if (translatedMessage) {
-        elem.append($('<i>' + key + ': ' + translatedMessage + '</i>'));
-      };
-    });
+    var elem = $("<p class='translations'>");
+    if (translations) {
+      keys = Object.keys(translations);
+      keys.forEach(function(key) {
+        var translatedMessage = translations[key];
+        if (translatedMessage) {
+          var newElem = $('<p class="translation ' + key +'">' + key + ': ' + translatedMessage + '</p>');
+          elem.append(newElem);
+          if (isARequestedDisplayLanguage(key)) {
+            newElem.show();
+          };
+        };
+      });
+    };
     return(elem);
-
-
     // end translations
-
   };
 
 </script>
 <script>
 //translator integration
 
-  var __last_msg = {};
-  var textInput = $('#textInput');
-  onload = function ()
-  {
-    translator.getTranslatorKey();
-  }
+var __last_msg = {};
+var textInput = $('#textInput');
+onload = function ()
+{
+  translator.getTranslatorKey();
+}
 
 // request a new callback function and pass its name and the text to the translator
 function handleTranslation(ref, message) {
-  var funcName = generateNewFunctionName();
-  generateNewFunction(funcName, ref);
-  translator.translate(message, funcName);
-
+  // TODO: currently we try to translate to all supported languages, this is wasteful
+  // but would require a fair bit of re-work to fix.
+  supportedLanguageCodes.forEach(function(langCode) {
+    //build a new function to be called as the callBack by ms translator
+    var funcName = generateNewFunctionName();
+    generateNewFunction(funcName, ref, {to: langCode});
+    translator.translate(message,
+      funcName,
+      'en',
+      langCode);
+  });
 }
 // update the firebase Reference with the translated message
-function updateFBWithTranslation(ref, translatedMessage) {
-  var to = 'ko';
+function updateFBWithTranslation(ref, translatedMessage, lang) {
   var keySet = {};
-  keySet[to] = translatedMessage;
-  ref.update({translations: keySet});
+  keySet[lang] = translatedMessage;
+  // ref.update({translations: keySet});
+  ref.child('translations').update(keySet);
 }
 
 // create a unique name for functions
 function generateNewFunctionName() {
-  return 'func' + Date.now();
+  var someRandomNumbers = Math.floor(Math.random() * 999) + 1
+  return 'func' + Date.now() + 'R' + someRandomNumbers ;
 }
 
 // do scary things
-function generateNewFunction(functionName, ref) {
+function generateNewFunction(functionName, ref, opts) {
+  console.log(functionName);
   window[functionName] = function(translatedMessage) {
     //encapsulation
-    var functionName = functionName;
+    //var functionName = functionName;
     var fireBaseRef = ref;
     var self = this;
     return (function() {
-      updateFBWithTranslation(ref, translatedMessage);
+      console.log('functionName:'+functionName);
+      console.log(ref, translatedMessage, opts);
+      updateFBWithTranslation(ref, translatedMessage, opts['to']);
     }())
   };
 };
