@@ -70,7 +70,7 @@ translator.expireTranslatorKey = function() {
 };
 translator.doubleCheckKey = function() {
   if (this.translatorKeyExpiresAt < Date.now()) {
-    debugger
+    debugger;
     console.log('notice: translator key was expired, renewing');
     this.getTranslatorKey();
   };

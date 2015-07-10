@@ -137,15 +137,17 @@ function scrollToBottom() {
       //FIELD VALUES
       var username = nameField.val();
       var message = messageField.val();
-
+      var currentLang = $('[name=my-lang] option:selected').attr('value');
       //SAVE DATA TO FIREBASE AND EMPTY FIELD
       var newMessageRef = messagesRef.push({
         name:username,
         text:message,
         userID:googleAuth.userID,
-        translations: null
+        translations: null,
+        specifiedLang: currentLang
       });
-      handleTranslation(newMessageRef, message);
+      //kick off translation for this message
+      handleTranslation(newMessageRef, message, currentLang);
       messageField.val('');
     }
   });
@@ -236,7 +238,7 @@ onload = function ()
 }
 
 // request a new callback function and pass its name and the text to the translator
-function handleTranslation(ref, message) {
+function handleTranslation(ref, message, fromLang) {
   // TODO: currently we try to translate to all supported languages, this is wasteful
   // but would require a fair bit of re-work to fix.
   supportedLanguageCodes.forEach(function(langCode) {
@@ -245,10 +247,11 @@ function handleTranslation(ref, message) {
     generateNewFunction(funcName, ref, {to: langCode});
     translator.translate(message,
       funcName,
-      'en',
+      fromLang,
       langCode);
   });
 }
+
 // update the firebase Reference with the translated message
 function updateFBWithTranslation(ref, translatedMessage, lang) {
   var keySet = {};
@@ -265,7 +268,6 @@ function generateNewFunctionName() {
 
 // do scary things
 function generateNewFunction(functionName, ref, opts) {
-  console.log(functionName);
   window[functionName] = function(translatedMessage) {
     //encapsulation
     //var functionName = functionName;
