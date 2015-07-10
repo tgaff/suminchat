@@ -3,7 +3,7 @@ var translator = {};
 
 
 translator.accessToken = null;
-translator.translatorKeyExpired = true;
+translator.translatorKeyExpiresAt = 0;
 
 // milliseconds before the key should expire that we mark it expired
 translator.keySafetyMarginMS = 15*1000; // seconds * 1000 = milliseconds
@@ -33,6 +33,7 @@ translator.getTranslatorKey = function() {
 // from: the language to translate from
 // to: the language to translate to
 translator.translate = function(text, callbackName, from, to) {
+  translator.doubleCheckKey();
   if (from==to) { return(false); } //no point in translating this
   var s = document.createElement("script");
   s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
@@ -42,25 +43,39 @@ translator.translate = function(text, callbackName, from, to) {
       "&text=" + encodeURIComponent(text) +
       "&oncomplete=" + callbackName;
   document.body.appendChild(s);
-}
+};
 translator.setupTranslatorKeyExpiration = function(msg) {
   var self = this;
-  var remainingTime = 1;
+  var remainingTime = 0;
   if (msg['expires_in']) {
-    remainingTime = msg['expires_in'];
-    this.translatorKeyExpired = false;
-    console.log(1000*remainingTime - this.keySafetyMarginMS);
-  }
-  setTimeout(function() { self.expireTranslatorKey(); },
-   (1000*remainingTime - this.keySafetyMarginMS)
-  );
-}
+    remainingTime = parseInt(msg['expires_in'])*1000;
+    self.translatorKeyExpiresAt = Date.now() + (remainingTime - self.keySafetyMarginMS);
+    console.log('translator key expires in ' + (remainingTime - self.keySafetyMarginMS + ' at ' + self.translatorKeyExpiresAt ));
+    // get a new key when this times out
+    setTimeout(function() { self.expireTranslatorKey(); },
+              (remainingTime - self.keySafetyMarginMS)
+    );
+  } else {
+    console.log('translator: expires_in message non-comprehensible: ['+ msg['expires_in'] + ', lost, confused.');
+    expireTranslatorKey();
+  };
+};
 translator.expireTranslatorKey = function() {
   console.log('expiring translator key');
   this.translatorKey = null;
-  this.translatorKeyExpired = true;
+  this.translatorKeyExpiresAt = Date.now();
   // for now we'll automatically get a new key but this is likely something we should do
   // at the translate() step, so that it's only done for active users.
   this.getTranslatorKey();
-}
-
+};
+translator.doubleCheckKey = function() {
+  if (this.translatorKeyExpiresAt < Date.now()) {
+    debugger
+    console.log('notice: translator key was expired, renewing');
+    this.getTranslatorKey();
+  };
+  if (this.accessToken == null) {
+    console.log('notice: translator key was null, renewing');
+    this.getTranslatorKey();
+  };
+};
