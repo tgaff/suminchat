@@ -104,14 +104,23 @@
     .example-chat footer input {
       border: 1px solid #ced3db;
       height: 40px; }
-    /* travis */
-    .example-chat footer .lang-selector form input,
-    .example-chat footer .lang-selector form label {
+/* travis */
+    .lang-selector {
+      width: 100%;
+      display: block;
+    }
+    #from-lang,
+    #to-lang {
+      margin: 10px 0px 10px 0px;
+      padding: 2px;
+    }
+    #from-lang select {
+      zoom: 150%;
+    }
+    .lang-selector form input,
+    .lang-selector form label {
       width: auto;
       display: inline;
-      padding: 2px;
-      border: 1px;
-      margin: 1px;
       /* box-sizing: border-box; */
       -webkit-box-shadow: none;
       box-shadow: none;

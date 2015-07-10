@@ -2,10 +2,9 @@
 <head>
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
-
   <script src='/javascripts/google_auth.js'></script>
   <script src='/javascripts/translator.js'></script>
-  <link rel="stylesheet" type="text/css" href="/css/css.css">
+  <link rel="stylesheet" type="text/css" href="css/css.css">
 </head>
 <body>
 
@@ -25,21 +24,30 @@
     <input type='text' id='messageInput'  placeholder='Type a message...'>
     <div class='lang-selector'>
       <div id='from-lang'>
+         <label>I am typing in: </label>
+         <select name="my-lang">
+          <option value="en" selected>en</option>
+          <option value="es">es</option>
+          <option value="de">de</option>
+          <option value="ko">ko</option>
+          <option value="zh-CHS">zh-CHS</option>
+        </select>
       </div>
-      <div id='to-lang'><form>
-        <label>I want to see translations in:</label>
-        <br>
-        <label>en</label>
-        <input type="checkbox" name="to" value="en">
-        <label>es</label>
-        <input type="checkbox" name="to" value="es">
-        <label>de</label>
-        <input type="checkbox" name="to" value="de">
-        <label>ko</label>
-        <input type="checkbox" name="to" value="ko">
-        <label>zh-CHS</label>
-        <input type="checkbox" name="to" value="zh-CHS">
-      </form>
+      <div id='to-lang'>
+        <form>
+          <label>I want to see translations in:</label>
+          <br>
+          <label>en</label>
+          <input type="checkbox" name="to" value="en">
+          <label>es</label>
+          <input type="checkbox" name="to" value="es">
+          <label>de</label>
+          <input type="checkbox" name="to" value="de">
+          <label>ko</label>
+          <input type="checkbox" name="to" value="ko">
+          <label>zh-CHS</label>
+          <input type="checkbox" name="to" value="zh-CHS">
+        </form>
       </div>
     </div>
   </footer>
