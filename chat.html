@@ -4,6 +4,7 @@
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
   <script src='/javascripts/google_auth.js'></script>
   <script src='/javascripts/translator.js'></script>
+  <script src='javascripts/jquery.phoenix.min.js'></script>
   <link rel="stylesheet" type="text/css" href="css/css.css">
 </head>
 <body>
@@ -14,7 +15,7 @@
 
   <div class='example-chat-toolbar'>
     <label for="nameInput">name:</label>
-    <input type='text' id='nameInput' placeholder='enter a username...'>
+    <input type='text' id='nameInput' placeholder='enter a username...' class='phoenix' >
     <!--<input type='button' id='logOut' value='log out'>-->
   </div>
 
@@ -25,7 +26,7 @@
     <div class='lang-selector'>
       <div id='from-lang'>
          <label>I am typing in: </label>
-         <select name="my-lang">
+         <select name="my-lang" class='phoenix'>
           <option value="en" selected>en</option>
           <option value="es">es</option>
           <option value="de">de</option>
@@ -34,19 +35,19 @@
         </select>
       </div>
       <div id='to-lang'>
-        <form>
+        <form class='phoenix'>
           <label>I want to see translations in:</label>
           <br>
           <label>en</label>
-          <input type="checkbox" name="to" value="en">
+          <input type="checkbox" class='phoenix' name="en" value="en">
           <label>es</label>
-          <input type="checkbox" name="to" value="es">
+          <input type="checkbox" class='phoenix' name="es" value="es">
           <label>de</label>
-          <input type="checkbox" name="to" value="de">
+          <input type="checkbox" class='phoenix' name="de" value="de">
           <label>ko</label>
-          <input type="checkbox" name="to" value="ko">
+          <input type="checkbox" class='phoenix' name="ko" value="ko">
           <label>zh-CHS</label>
-          <input type="checkbox" name="to" value="zh-CHS">
+          <input type="checkbox" class='phoenix' name="zh-CHS" value="zh-CHS">
         </form>
       </div>
     </div>
@@ -63,7 +64,9 @@ var rootRef = new Firebase("https://suminchat.firebaseio.com");
 var onAuthCallback = function(authData) {
   googleAuth.authDataCallback(authData);
   if (authData) {
-    updateUserName(googleAuth.userName);
+    if (($('#nameInput').val().length < 1) ) {
+      updateUserName(googleAuth.userName);
+    };
     rootRef.offAuth(onAuthCallback);
     setupMessageMonitor();
   };
@@ -117,6 +120,10 @@ $(document).ready(function() {
     })
   });//forEach
 });
+$(document).ready(function() {
+    $('.phoenix').phoenix();
+});
+
 function scrollToBottom() {
   messageList[0].scrollTop = messageList[0].scrollHeight;
 };
