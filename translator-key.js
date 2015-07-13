@@ -11,52 +11,59 @@ function getTranslatorKey(clientReq, clientRes, next) {
   // a request and send one to Microsoft.  We then use MS's response in
   // our response.  We'll call the local ones clientReq/clientRes and the
   // cycle with MS is msReq/msRes
-
   //var url = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
 
   //var url1 = 'https://api.datamarket.azure.com/Bing/MicrosoftTranslator/v1/Translate';
 
-  //break the url into components for http request :-/
-  var options = {
-    host: 'datamarket.accesscontrol.windows.net',
-    path: '/v2/OAuth2-13/',
-    method: 'POST'
-  }
+  if (clientReq.url.match('/translatorkey') != null) {
+    console.log(clientReq.url);
+    debugger;
 
-  // ms token request input params
-  var requestContent = {
-    grant_type: 'client_credentials',
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    scope: 'http://api.microsofttranslator.com'
-  };
-  if (!(requestContent.client_id && requestContent.client_secret)) {
-    // throw?
-    console.log('Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING');
-    next(); return;
-  }
+    //break the url into components for http request :-/
+    var options = {
+      host: 'datamarket.accesscontrol.windows.net',
+      path: '/v2/OAuth2-13/',
+      method: 'POST'
+    }
 
-  var requiredData;
-  // build the request object
-  var msReq = https.request(options, function(msRes) {
-    console.log('STATUS: ' + msRes.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(msRes.headers));
-    msRes.setEncoding('utf8');
-    msRes.on('data', function(chunk) {
-      requiredData = parseTokenResponseData(chunk);
+    // ms token request input params
+    var requestContent = {
+      grant_type: 'client_credentials',
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      scope: 'http://api.microsofttranslator.com'
+    };
+    if (!(requestContent.client_id && requestContent.client_secret)) {
+      // throw?
+      console.log('Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING');
+      next(); return;
+    }
 
-    // send the token back to the client
-    clientRes.write(JSON.stringify(requiredData));  // hmm error handling?
-    clientRes.end();
+    var requiredData;
+    // build the request object
+    var msReq = https.request(options, function(msRes) {
+      console.log('STATUS: ' + msRes.statusCode);
+      console.log('HEADERS: ' + JSON.stringify(msRes.headers));
+      msRes.setEncoding('utf8');
+      msRes.on('data', function(chunk) {
+        requiredData = parseTokenResponseData(chunk);
+
+      // send the token back to the client
+      debugger
+      clientRes.write(JSON.stringify(requiredData));  // hmm error handling?
+      clientRes.end();
+      });
     });
-  });
-  msReq.on('error', function(e) {
-    console.log('problem with request: ' + e.message);
-  });
+    msReq.on('error', function(e) {
+      console.log('problem with request: ' + e.message);
+    });
 
-  // write the query input params into the request body
-  msReq.write(querystring.stringify(requestContent));
-  msReq.end(); //send to microsoft
+    // write the query input params into the request body
+    msReq.write(querystring.stringify(requestContent));
+    msReq.end(); //send to microsoft
+  } else {
+    next();
+  }
 };
 
 function parseTokenResponseData(chunk) {
