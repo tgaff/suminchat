@@ -61,7 +61,7 @@ gulp.task('watch', function() {
 
 gulp.task('connect', function() {
   connect.server({
-    root: '.',
+    //root: '.', //setting this reveals a bug in gulp-connect that returns Forbidden+stacktrace
     port: 8000,
     livereload: true,
     middleware: function(connect, opt) {
