@@ -6,7 +6,8 @@ To run (in development):
     npm install  
     gulp
 
-To try: localhost:8000/chat.html
+Gulp will automatically open a web browser or 
+to try, visit: localhost:8000/chat.html
 
 # Components
 
