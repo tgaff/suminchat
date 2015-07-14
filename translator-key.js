@@ -14,8 +14,6 @@ function getTranslatorKey(clientReq, clientRes, next) {
   //var url = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
 
   //var url1 = 'https://api.datamarket.azure.com/Bing/MicrosoftTranslator/v1/Translate';
-  console.log('okie we got in');
-  console.log(clientReq.url);
   if (clientReq.url.match(/translatorkey/i) != null) {
 
     //break the url into components for http request :-/
