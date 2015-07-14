@@ -1,3 +1,6 @@
+// THIS MAY BE DEPRECATED IF WE KEEP THE GULP CONFIG
+// TODO: switch heroku over to gulp too...?
+
 var connect = require('connect');
 var serveStatic = require('serve-static');
 var app = connect();
@@ -7,7 +10,7 @@ var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
 console.log("ITS ALIVE!!!!!!! !!!!!!!");
 
 
-var port = (process.env.PORT || 8080);
+var port = (process.env.PORT || 8000);
 app.use('/translatorkey', getTranslatorKey);
 app.use(redirectToChat);
 

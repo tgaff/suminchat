@@ -4,7 +4,7 @@ Chat with translation
 
 To run: node server.js
 
-To try: localhost:8080/chat.html
+To try: localhost:8000/chat.html
 
 # Components
 
