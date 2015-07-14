@@ -7,6 +7,13 @@ var openPage        = require("gulp-open");
 var getTranslatorKey = require('./translator-key.js');
 var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
 
+
+// middleware function to pass to connect
+function middlewares(connect, opt) {
+  return [getTranslatorKey, redirectToChat]
+}
+
+
 /**
 *  RELOAD
 *
@@ -63,9 +70,16 @@ gulp.task('connect', function() {
     //root: '.', //setting this reveals a bug in gulp-connect that returns Forbidden+stacktrace
     port: 8000,
     livereload: true,
-    middleware: function(connect, opt) {
-      return [getTranslatorKey, redirectToChat]
-    }
+    middleware: middlewares
+  });
+});
+
+gulp.task('serveprod', function() {
+  connect.server({
+    //root: '.',
+    port: process.env.PORT || 8000,
+    livereload: false,
+    middleware: middlewares
   });
 });
 
@@ -83,4 +97,8 @@ gulp.task('default', ['css', 'watch', 'connect'], function() {
       }));
 
   return stream;
+});
+
+gulp.task('production', ['css', 'serveprod'], function() {
+  console.log('production up!');
 });
