@@ -2,7 +2,9 @@
 Chat with translation
 # Usage 
 
-To run: node server.js
+To run (in development):
+    npm install  
+    gulp
 
 To try: localhost:8000/chat.html
 
