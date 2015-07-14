@@ -6,7 +6,7 @@ var connect         = require('gulp-connect');
 var webserver       = require('gulp-webserver');
 var openPage        = require("gulp-open");
 var getTranslatorKey = require('./translator-key.js');
-
+var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
 
 /**
 *  RELOAD
@@ -65,7 +65,7 @@ gulp.task('connect', function() {
     port: 8000,
     livereload: true,
     middleware: function(connect, opt) {
-      return [getTranslatorKey]
+      return [getTranslatorKey, redirectToChat]
     }
   });
 });
