@@ -5,20 +5,22 @@
   <script src='/javascripts/google_auth.js'></script>
   <script src='/javascripts/translator.js'></script>
   <script src='javascripts/jquery.phoenix.min.js'></script>
-  <link rel="stylesheet" type="text/css" href="css/css.css">
+  <link rel="stylesheet" type="text/css" href="css/chat.css">
 </head>
 <body>
 
 <!-- CHAT MARKUP -->
 <div class="example-chat l-demo-container">
-  <header>chat with translation</header>
-
-  <div class='example-chat-toolbar'>
-    <label for="nameInput">name:</label>
-    <input type='text' id='nameInput' placeholder='enter a username...' class='phoenix' >
-    <!--<input type='button' id='logOut' value='log out'>-->
-  </div>
-
+  <header>
+    <div class='example-chat-toolbar'>
+      <h2>chat with translation</h2>
+    </div>
+    <div class='example-chat-username-field'>
+      <!--<label for="nameInput">name:</label>-->
+      <input type='text' id='nameInput' placeholder='enter a username...' class='phoenix' >
+      <!--<input type='button' id='logOut' value='log out'>-->
+    </div>
+  </header>
   <ul id='example-messages' class="example-chat-messages"></ul>
 
   <footer>
