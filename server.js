@@ -11,7 +11,8 @@ console.log("ITS ALIVE!!!!!!! !!!!!!!");
 
 
 var port = (process.env.PORT || 8000);
-app.use('/translatorkey', getTranslatorKey);
+
+app.use(getTranslatorKey);
 app.use(redirectToChat);
 
 app.use(serveStatic(__dirname)).listen(port);
