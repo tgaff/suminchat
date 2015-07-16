@@ -3,7 +3,8 @@
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
   <script src='/javascripts/google_auth.js'></script>
-  <script src='/javascripts/translator.js'></script>
+  <script src='javascripts/microsoftTranslator.js'></script>
+  <script src='javascripts/translationRouter.js'></script>
   <script src='javascripts/jquery.phoenix.min.js'></script>
   <link rel="stylesheet" type="text/css" href="css/chat.css">
 </head>
@@ -133,7 +134,7 @@ function scrollToBottom() {
 </script>
 <!-- CHAT JAVACRIPT -->
 <script>
-  var chatRoom = 'demo1';
+  var chatRoom = 'demo2';
   var messagesRef = new Firebase('https://suminchat.firebaseio.com/').child(chatRoom);
 
   // REGISTER DOM ELEMENTS
@@ -255,42 +256,24 @@ function handleTranslation(ref, message, fromLang) {
   // but would require a fair bit of re-work to fix.
   supportedLanguageCodes.forEach(function(langCode) {
     //build a new function to be called as the callBack by ms translator
-    var funcName = generateNewFunctionName();
-    generateNewFunction(funcName, ref, {to: langCode});
-    translator.translate(message,
-      funcName,
+    var opts = { firebaseRef: ref, to: langCode } // this needs to be unique for each call
+    Translator.translate(message,
       fromLang,
-      langCode);
+      langCode,
+      updateFBWithTranslation,
+      opts);
   });
 }
 
 // update the firebase Reference with the translated message
-function updateFBWithTranslation(ref, translatedMessage, lang) {
+function updateFBWithTranslation(translatedMessage, opts) {
+  var ref = opts.firebaseRef;
+  var lang = opts.to;
   var keySet = {};
+  console.log(translatedMessage, opts);
   keySet[lang] = translatedMessage;
   // ref.update({translations: keySet});
   ref.child('translations').update(keySet);
-}
-
-// create a unique name for functions
-function generateNewFunctionName() {
-  var someRandomNumbers = Math.floor(Math.random() * 999) + 1
-  return 'func' + Date.now() + 'R' + someRandomNumbers ;
-}
-
-// do scary things
-function generateNewFunction(functionName, ref, opts) {
-  window[functionName] = function(translatedMessage) {
-    //encapsulation
-    //var functionName = functionName;
-    var fireBaseRef = ref;
-    var self = this;
-    return (function() {
-      console.log('functionName:'+functionName);
-      console.log(ref, translatedMessage, opts);
-      updateFBWithTranslation(ref, translatedMessage, opts['to']);
-    }())
-  };
 };
 </script>
 </body>
