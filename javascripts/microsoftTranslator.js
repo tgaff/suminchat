@@ -10,21 +10,26 @@ MSTranslator.keySafetyMarginMS = 15*1000; // seconds * 1000 = milliseconds
 
 //get access token
 MSTranslator.getTranslatorKey = function() {
-  $.ajax({
+  var self = this;
+  var request = $.ajax({
     type: 'POST',
     url: '/MSTranslatorkey',
     dataType: 'json',
     success: function(msg) {
       if(msg) {
-        __list_msg = msg;
-        MSTranslator.accessToken = msg['access_token'];
-        MSTranslator.setupTranslatorKeyExpiration(msg);
+        //__list_msg = msg;
+        self.accessToken = msg['access_token'];
+        self.setupTranslatorKeyExpiration(msg);
         console.log(msg);
       } else {
+        // FIXME: something better
         alert("error" + msg);
+        self.translatorKeyRequest = null;
       }
     }
   });
+  this.translatorKeyRequest = request;
+  return request;
 }
 // text, callbackName, from, to
 // text: text to translate,
@@ -32,7 +37,13 @@ MSTranslator.getTranslatorKey = function() {
 // from: the language to translate from
 // to: the language to translate to
 MSTranslator.translate = function(text, callbackName, from, to) {
-  MSTranslator.doubleCheckKey();
+  //first make sure we have a key, then call the REAL translate
+  var self = this;
+  MSTranslator.doubleCheckKey().done(function() {
+    self.realTranslate(text, callbackName, from, to)} );
+};
+// the REAL translate.  // note, fails miserably if you don't have a key
+MSTranslator.realTranslate = function(text, callbackName, from, to) {
   if (from==to) { return(false); } //no point in translating this
   var s = document.createElement("script");
   s.src = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate" +
@@ -67,13 +78,21 @@ MSTranslator.expireTranslatorKey = function() {
   // at the translate() step, so that it's only done for active users.
   this.getTranslatorKey();
 };
+// returns a promise for a new translator key request
 MSTranslator.doubleCheckKey = function() {
+  if (this.translatorKeyRequest != null) {
+    console.log('notice: MSTranslator key request pending, please wait');
+    return this.translatorKeyRequest;
+  }
   if (this.MSTranslatorKeyExpiresAt < Date.now()) {
     console.log('notice: MSTranslator key was expired, renewing');
-    this.getTranslatorKey();
+    return this.getTranslatorKey();
   };
   if (this.accessToken == null) {
     console.log('notice: MSTranslator key was null, renewing');
-    this.getTranslatorKey();
+    return this.getTranslatorKey();
   };
+  // we're good here, return a completed promise
+  console.log('double check is all good');
+  return $.Deferred().resolve().promise();
 };

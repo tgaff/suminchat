@@ -15,7 +15,10 @@
 */
 
 var Translator = function() {
-
+  // perform setup
+  onload = function() {
+    MStranslator.getTranslatorKey();
+  }
   //private functions  (they shouldn't NEED to be anonymous)
 
   var callMSTranslator = function(text, from, to, callbackName) {
