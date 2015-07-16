@@ -17,7 +17,7 @@
 var Translator = function() {
   // perform setup
   onload = function() {
-    MStranslator.getTranslatorKey();
+    MSTranslator.getTranslatorKey();
   }
   //private functions  (they shouldn't NEED to be anonymous)
 
