@@ -44,8 +44,8 @@ var Translator = function() {
 
     translate: function(text, from, to, callback, opts) {
       // route to appropriate translator
+      if (opts === undefined) { var opts = {}; }
       this.translateWithMSTranslator(text, from, to, callback, opts);
-      console.log(opts);
     },
 
 
