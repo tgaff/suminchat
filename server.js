@@ -4,7 +4,7 @@
 var connect = require('connect');
 var serveStatic = require('serve-static');
 var app = connect();
-var getTranslatorKey = require('./translator-key.js');
+var getTranslatorKey = require('./MSTranslatorKey.js');
 var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
 var naver = require('./naverTranslatorServer.js');
 

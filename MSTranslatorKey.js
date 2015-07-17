@@ -12,9 +12,8 @@ function getTranslatorKey(clientReq, clientRes, next) {
   // our response.  We'll call the local ones clientReq/clientRes and the
   // cycle with MS is msReq/msRes
   //var url = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
-
   //var url1 = 'https://api.datamarket.azure.com/Bing/MicrosoftTranslator/v1/Translate';
-  if (clientReq.url.match(/translatorkey/i) != null) {
+  if (clientReq.url.match(/MSTranslatorKey/i) != null) {
 
     //break the url into components for http request :-/
     var options = {
@@ -32,7 +31,7 @@ function getTranslatorKey(clientReq, clientRes, next) {
     };
     if (!(requestContent.client_id && requestContent.client_secret)) {
       // throw?
-      console.log('Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING');
+      console.log('[WARNING] Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING');
       next(); return;
     }
 

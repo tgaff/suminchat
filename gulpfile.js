@@ -4,7 +4,7 @@ var autoprefixer    = require('gulp-autoprefixer');
 var minifyCSS       = require('gulp-minify-css');
 var connect         = require('gulp-connect');
 var openPage        = require("gulp-open");
-var getTranslatorKey = require('./translator-key.js');
+var getTranslatorKey = require('./MSTranslatorKey.js');
 var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
 var naverTranslator = require('./naverTranslatorServer.js');
 

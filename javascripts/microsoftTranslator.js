@@ -13,7 +13,7 @@ MSTranslator.getTranslatorKey = function() {
   var self = this;
   var request = $.ajax({
     type: 'POST',
-    url: '/MSTranslatorkey',
+    url: '/MSTranslatorKey',
     dataType: 'json',
     success: function(msg) {
       if(msg) {
