@@ -6,11 +6,11 @@ var connect         = require('gulp-connect');
 var openPage        = require("gulp-open");
 var getTranslatorKey = require('./translator-key.js');
 var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
-
+var naverTranslator = require('./naverTranslatorServer.js');
 
 // middleware function to pass to connect
 function middlewares(connect, opt) {
-  return [getTranslatorKey, redirectToChat]
+  return [getTranslatorKey, naverTranslator.route, redirectToChat]
 }
 
 

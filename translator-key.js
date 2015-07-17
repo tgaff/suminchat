@@ -45,10 +45,9 @@ function getTranslatorKey(clientReq, clientRes, next) {
       msRes.on('data', function(chunk) {
         requiredData = parseTokenResponseData(chunk);
 
-      // send the token back to the client
-      debugger
-      clientRes.write(JSON.stringify(requiredData));  // hmm error handling?
-      clientRes.end();
+        // send the token back to the client
+        clientRes.write(JSON.stringify(requiredData));  // hmm error handling?
+        clientRes.end();
       });
     });
     msReq.on('error', function(e) {

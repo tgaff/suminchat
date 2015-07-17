@@ -1,5 +1,5 @@
 /* Some translators require a callback function
- * the page calling Translator.translate should provide us with a way to get a callback function
+ * the page calling Translator.translate should provide us with a callback function
  * the interface for such a function should be:
  *  function(translatedMessage, options) { // handle the translated message }
  * You can pass this to the Translator like:
@@ -38,14 +38,51 @@ var Translator = function() {
     return( callbackFunc(translatedMessage, options) );
     }
   }
-
   // PUBLIC
   return { //obj
 
     translate: function(text, from, to, callback, opts) {
       // route to appropriate translator
       if (opts === undefined) { var opts = {}; }
+
+      if (from == 'ko') {
+        switch (to)
+        {
+          case "zh-CHS":
+            to = 'zh';
+          case "en":
+          case 'ja':
+            this.translateWithNaverTranslator(text, from, to, callback, opts);
+            return;
+          default:
+            break;
+        }
+      }
+      if (to == 'ko') {
+        switch (from) {
+          case "zh-CHS":
+            from = 'zh';
+          case 'ja':
+          case 'en':
+            this.translateWithNaverTranslator(text, from, to, callback, opts);
+            return;
+          default:
+            break;
+        };
+      }
       this.translateWithMSTranslator(text, from, to, callback, opts);
+
+    },
+
+    translateWithDefaultTranslator: function(text, from, to, callbackName, opts) {
+      translateWithMSTranslator(text, from, to, callbackName, opts);
+    },
+
+
+    translateWithNaverTranslator: function(text, from, to, callback, opts) {
+      var newFunc = generateNewFunctionName();
+      makeNewCallback(newFunc, callback, opts);
+      NaverTranslator.translate(text, from, to, callback, opts);
     },
 
 
@@ -58,11 +95,6 @@ var Translator = function() {
       // call the api for translation
       callMSTranslator(text, from, to, newFunc);
       // in turn the api calls back to newFunc(translatedMessage, opts)
-    },
-
-
-    translateWithNaverTranslator: function(text, from, to, callback, opts) {
-      console.log('not implemented')
     }
 
 
