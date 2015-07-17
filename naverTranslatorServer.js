@@ -52,7 +52,6 @@ function getTranslation(clientReq, clientRes, next) {
       if (!error && response.statusCode == 200) {
         console.log(body);
         var parsedData = parse(body);
-        //body = JSON.parse(body);
 
         var ourResponse = {
           error: parsedData.error,
@@ -62,6 +61,8 @@ function getTranslation(clientReq, clientRes, next) {
           naverDir: parsedData.dir,
           naverResultCode: parsedData.resultCode
         }
+        console.log('responding: ' + ourResponse);
+        clientRes.writeHead(200, {"Content-Type": "application/json"});
         clientRes.write( JSON.stringify(ourResponse) );
         clientRes.end();
       } else {
@@ -71,6 +72,7 @@ function getTranslation(clientReq, clientRes, next) {
   );
   return;
 }
+
 function return400(res) {
   res.writeHead(400);
   res.end();

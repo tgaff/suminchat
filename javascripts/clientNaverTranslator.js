@@ -23,8 +23,7 @@ var NaverTranslator = function() {
              },
         success: function(msg) {
           console.log(msg);
-          console.log(msg.translatedMessage);
-          callback(JSON.parse(msg).translatedMessage, opts)
+          callback(msg.translatedMessage, opts)
         }
       });
 
