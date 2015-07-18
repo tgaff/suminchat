@@ -85,7 +85,8 @@ setTimeout(function() {
   }
 }, 1000);
 */
-setTimeout(function() { rootRef.onAuth(onAuthCallback); }, 400);
+//$(document).ready(setTimeout(function() { rootRef.onAuth(onAuthCallback); }, 200));
+// we'll do this onLoad
 
 logOutButton.click(function() {
   rootRef.unauth(); // not working so great
@@ -243,6 +244,8 @@ var __last_msg = {};
 var textInput = $('#textInput');
 onload = function ()
 {
+  console.log('do auth');
+  setTimeout(function() { rootRef.onAuth(onAuthCallback); }, 500);
   translator.getTranslatorKey();
 }
 

@@ -3,11 +3,15 @@ var googleAuth = {};
 // rootRef must be defined globally, first!
 
 googleAuth.authDataCallback = function(authData) {
+    console.log('authData=' +authData);
     self.authData = authData;
-    if (!authData) {
-        rootRef.authWithOAuthRedirect("google", function (error) {
-            console.log("Login Failed!", error);
-        });
+    if (authData == null) {
+        setTimeout(function() {
+          rootRef.authWithOAuthRedirect("google", function (error) {
+              debugger;
+              console.log("Login Failed!", error);
+          });
+        }, 800);
     }
     else {
         console.log("Authenticated successfully with payload:", authData);
