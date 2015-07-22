@@ -4,14 +4,15 @@
 var connect = require('connect');
 var serveStatic = require('serve-static');
 var app = connect();
-var getTranslatorKey = require('./translator-key.js');
+var getTranslatorKey = require('./MSTranslatorKey.js');
 var redirectToChat = require('./redirect.js')(/\/$/, '/chat.html');
+var naver = require('./naverTranslatorServer.js');
 
 console.log("ITS ALIVE!!!!!!! !!!!!!!");
 
 
 var port = (process.env.PORT || 8000);
-
+app.use('/getNaverTranslation', naver.getTranslation);
 app.use(getTranslatorKey);
 app.use(redirectToChat);
 

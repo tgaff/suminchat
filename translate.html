@@ -2,7 +2,8 @@
 <head>
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
-  <script src='javascripts/translator.js'></script>
+  <script src='javascripts/microsoftTranslator.js'></script>
+  <script src='javascripts/translationRouter.js'></script>
 
   <link rel="stylesheet" type="text/css" href="css/old_css.css">
 </head>
@@ -10,7 +11,7 @@
 
 <!-- CHAT MARKUP -->
 <div class="example-chat l-demo-container">
-  <header>chat with translation</header>
+  <header>translate to korean</header>
 
   <div class='example-chat-toolbar'>
     <label for="textInput">text:</label>
@@ -23,26 +24,30 @@
 </div>
 <script type="text/javascript">
   var translateButton = $('#translate');
-  var __last_msg = {};
   var textInput = $('#textInput');
-  onload = function ()
-  {
-    translator.getTranslatorKey();
-  }
-
 
   translateButton.click(function() {
-    if (textInput.val()) {
-      translator.translate(textInput.val(), 'insertTranslation', 'en', 'ko');
-    }
+    doTranslation();
   });
 
+  textInput.keypress(function (e) {
+    // on r
+    if (e.keyCode == 13) {
+      doTranslation();
+    };
+  });
   function mycallback(response)
   {
       //alert(response);
     insertTranslation(response);
   }
-
+  function doTranslation() {
+    if (textInput.val()) {
+      //Translator.translate(textInput.val(), 'en', 'ko', 'insertTranslation');
+      Translator.translate(textInput.val(), 'en', 'ko', insertTranslation);
+      textInput.val('');
+    }
+  };
 
 var messageList = $('#example-messages');
 //insert to page
