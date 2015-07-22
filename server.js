@@ -1,5 +1,4 @@
 // THIS MAY BE DEPRECATED IF WE KEEP THE GULP CONFIG
-// TODO: switch heroku over to gulp too...?
 
 var connect = require('connect');
 var serveStatic = require('serve-static');

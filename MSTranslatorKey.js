@@ -30,9 +30,11 @@ function getTranslatorKey(clientReq, clientRes, next) {
       scope: 'http://api.microsofttranslator.com'
     };
     if (!(requestContent.client_id && requestContent.client_secret)) {
-      // throw?
-      console.log('[WARNING] Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING');
-      next(); return;
+      var errorMessage = '[WARNING] Required CLIENT_ID or CLIENT_SECRET environment keys not set; FAILING';
+      console.log(errorMessage);
+      clientRes.writeHead(503, errorMessage);
+      clientRes.end();
+      return;
     }
 
     var requiredData;
