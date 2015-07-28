@@ -15,17 +15,21 @@ MSTranslator.getTranslatorKey = function() {
     type: 'POST',
     url: '/MSTranslatorKey',
     dataType: 'json',
-    success: function(msg) {
+    success: function(msg, textStatus, jqXHR) {
       if(msg) {
         //__list_msg = msg;
         self.accessToken = msg['access_token'];
         self.setupTranslatorKeyExpiration(msg);
         console.log(msg);
       } else {
-        // FIXME: something better
-        alert("error" + msg);
+        console.log("error in retrieving /MSTranslatorKey: " + msg);
         self.translatorKeyRequest = null;
       }
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      console.log(errorThrown);
+      self.translatorKeyRequest = null;
+      if (location.host.match(/localhost/)) { alert(textStatus + errorThrown); };
     }
   });
   this.translatorKeyRequest = request;

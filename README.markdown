@@ -9,6 +9,10 @@ To run (in development):
 Gulp will automatically open a web browser or 
 to try, visit: localhost:8000/chat.html
 
+You can also run `node server.js`.
+
+In order to use translation with Microsoft Translator you need to register with Microsoft and get your CLIENT_ID and CLIENT_SECRET.  Set these as environment variables before running the server.
+
 # Components
 
 ## Front-end
